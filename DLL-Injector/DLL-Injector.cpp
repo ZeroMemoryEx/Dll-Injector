@@ -85,7 +85,7 @@ BOOL InjectDLL(DWORD procID,const char *procName,const char *dllPath)
 }
 int main()
 {
-    const char* procName = "ac_client.exe";
+    const char* procName = "explorer.exe";
     const char* dllPath = "C:\\Users\\anas\\Desktop\\86.dll";
     if (PathFileExists(dllPath)== FALSE)
     {
