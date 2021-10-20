@@ -2,24 +2,33 @@
 #include <Windows.h>
 #include <TlHelp32.h>
 #include <iomanip>
-#include <stdio.h>
 #include <Shlwapi.h>
 #pragma comment( lib, "shlwapi.lib")
 
+
+BOOL InjectDLL(DWORD procID, const char* procName, const char* dllPath);
 template <typename ... T>
 __forceinline void print_bad(const char* format, T const& ... args)
 {
-    printf("[\033[91m!\033[0m]\033[33m ");
+    std::cout <<"[\033[91m!\033[0m]\033[33m ";
     printf(format, args ...);
-    printf("\033[0m");
+    std::cout << "\033[0m";
+}
+
+template <typename ... T>
+__forceinline void print_info(const char* format, T const& ... args)
+{
+    std::cout << "[\033[96m*\033[0m]\033[33m ";
+    printf(format, args ...);
+    std::cout << "\033[0m";
 }
 
 template <typename ... T>
 __forceinline void print_good(const char* format, T const& ... args)
 {
-    printf("[\033[92m+\033[0m]\033[33m ");
+    std::cout <<"[\033[92m+\033[0m]\033[33m ";
     printf(format, args ...);
-    printf("\033[0m");
+    std::cout << "\033[0m";
 }
 
 DWORD GetProcId(const char* pn,unsigned short int fi = 0b1101)
@@ -38,12 +47,13 @@ DWORD GetProcId(const char* pn,unsigned short int fi = 0b1101)
                 Process32Next(hSnap, &pE);
             do
             {
+            //    InjectDLL(pE.th32ProcessID, pE.szExeFile, "C:\\Users\\anas\\source\\repos\\Dll443\\Debug\\Dll443.dll");
                 if (fi == 0b10100111001)
                     std::cout << pE.szExeFile << u8"\x9\x9\x9" << pE.th32ProcessID << std::endl;
                 if (!_stricmp(pE.szExeFile, pn))
                 {
                     procId = pE.th32ProcessID;
-                    print_good("proces : 0x%lX\n", pE);
+                    print_good("Process : 0x%lX\n", pE);
                     break;
                 }
             } while (Process32Next(hSnap, &pE));
@@ -83,23 +93,31 @@ BOOL InjectDLL(DWORD procID,const char *procName,const char *dllPath)
     }
     return 0;
 }
-int main()
+int main(void)
 {
-    const char* procName = "explorer.exe";
-    const char* dllPath = "C:\\Users\\anas\\Desktop\\86.dll";
-    if (PathFileExists(dllPath)== FALSE)
+    std::string pname,dllpath;
+    print_info("process name (The name of process to inject ) :");
+    std::cin >> pname;
+    print_info("dll path (Full path to the desired dll ) : ");
+    std::cin >> dllpath;
+
+    if (PathFileExists(dllpath.c_str())== FALSE)
     {
-        std::cerr << "[!]DLL file does NOT exist!" << std::endl;
+        print_bad ("DLL File does NOT exist!" );
         return EXIT_FAILURE;
     }
     DWORD procId = 0;
-    procId = GetProcId(procName);
+    procId = GetProcId(pname.c_str());
     if (procId == NULL)
     {
-        std::cout << "Process Not found ...\nHere is a list of available process" << std::endl;
+        print_bad("Process Not found (0x%lX)\n", GetLastError());
+        print_info("Here is a list of available process \n", GetLastError());
+        Sleep(3500);
+        system("cls");
         GetProcId("skinjbir", 0b10100111001);
     }
     else 
-        InjectDLL(procId, procName, dllPath);
+        InjectDLL(procId, pname.c_str(), dllpath.c_str());
 
+    return EXIT_SUCCESS;
 }
