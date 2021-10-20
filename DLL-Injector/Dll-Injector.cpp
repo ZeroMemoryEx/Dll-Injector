@@ -10,25 +10,23 @@ BOOL InjectDLL(DWORD procID, const char* procName, const char* dllPath);
 template <typename ... T>
 __forceinline void print_bad(const char* format, T const& ... args)
 {
-    std::cout <<"[\033[91m!\033[0m]\033[33m ";
+    std::cout <<"[!] ";
     printf(format, args ...);
-    std::cout << "\033[0m";
 }
 
 template <typename ... T>
 __forceinline void print_info(const char* format, T const& ... args)
 {
-    std::cout << "[\033[96m*\033[0m]\033[33m ";
+    std::cout << "[*] ";
     printf(format, args ...);
-    std::cout << "\033[0m";
+
 }
 
 template <typename ... T>
 __forceinline void print_good(const char* format, T const& ... args)
 {
-    std::cout <<"[\033[92m+\033[0m]\033[33m ";
+    std::cout <<"[+] ";
     printf(format, args ...);
-    std::cout << "\033[0m";
 }
 
 DWORD GetProcId(const char* pn,unsigned short int fi = 0b1101)
@@ -47,7 +45,6 @@ DWORD GetProcId(const char* pn,unsigned short int fi = 0b1101)
                 Process32Next(hSnap, &pE);
             do
             {
-            //    InjectDLL(pE.th32ProcessID, pE.szExeFile, "C:\\Users\\anas\\source\\repos\\Dll443\\Debug\\Dll443.dll");
                 if (fi == 0b10100111001)
                     std::cout << pE.szExeFile << u8"\x9\x9\x9" << pE.th32ProcessID << std::endl;
                 if (!_stricmp(pE.szExeFile, pn))
@@ -100,6 +97,7 @@ int main(void)
     std::cin >> pname;
     print_info("dll path (Full path to the desired dll ) : ");
     std::cin >> dllpath;
+    system("cls");
 
     if (PathFileExists(dllpath.c_str())== FALSE)
     {
@@ -118,6 +116,7 @@ int main(void)
     }
     else 
         InjectDLL(procId, pname.c_str(), dllpath.c_str());
+    system("pause");
 
     return EXIT_SUCCESS;
 }
