@@ -6,7 +6,7 @@
 #pragma comment( lib, "shlwapi.lib")
 
 
-BOOL InjectDLL(DWORD procID, const char* procName, const char* dllPath);
+BOOL InjectDLL(DWORD procID, const char* dllPath);
 template <typename ... T>
 __forceinline void print_bad(const char* format, T const& ... args)
 {
@@ -61,7 +61,7 @@ DWORD GetProcId(const char* pn,unsigned short int fi = 0b1101)
 }
 
 
-BOOL InjectDLL(DWORD procID,const char *procName,const char *dllPath)
+BOOL InjectDLL(DWORD procID,const char *dllPath)
 {
     BOOL WPM = 0;
 
@@ -115,7 +115,7 @@ int main(void)
         GetProcId("skinjbir", 0b10100111001);
     }
     else 
-        InjectDLL(procId, pname.c_str(), dllpath.c_str());
+        InjectDLL(procId, dllpath.c_str());
     system("pause");
 
     return EXIT_SUCCESS;
